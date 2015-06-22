@@ -4,9 +4,14 @@ PLAYER = function() {
 
     var $this = this;
 
+    this.canvas = null;
+
     this.context = null;
     this.buffer = null;
-    this.source = [];
+    this.source = null;
+
+    this.analyser = null;
+    this.analyserNode = null;
 
     this.playbackTime = 0; // time of the audio playback, seconds
     this.startTimestamp = 0; // timestamp of last playback start, milliseconds
@@ -16,24 +21,31 @@ PLAYER = function() {
     // Create a new AudioBufferSourceNode
     this.initSource = function() {
 
-        this.source = this.context.createBufferSource();
         this.source.buffer = this.buffer;
-        this.source.connect(this.context.destination);
 
         // Bind the callback to this
         var endOfPlayback = this.endOfPlayback.bind(this);
         this.source.onended = endOfPlayback;
-    }
+    };
+
+    this.initCanvas = function() {
+
+        this.canvas = document.getElementsByTagName('canvas')[0];
+        this.canvas = this.canvas.getContext('2d');
+
+        this.canvasGradient = this.canvas.createLinearGradient(0, 0, 0, 300);
+        this.canvasGradient.addColorStop(1, '#000000');
+        this.canvasGradient.addColorStop(0.75, '#ff0000');
+        this.canvasGradient.addColorStop(0.25, '#ffff00');
+        this.canvasGradient.addColorStop(0, '#ffffff');
+    };
 
     this.play = function() {
 
         if (this.isPlaying)
             return false;
 
-        var when = 0; // when to schedule playback, 0 is immediately
-
         this.initSource();
-
 
         this.source.start(0, this.playbackTime);
 
@@ -49,6 +61,7 @@ PLAYER = function() {
 
     // stop or pause
     this.stop = function(pause) {
+
         if (!this.isPlaying)
             return false;
 
@@ -57,7 +70,7 @@ PLAYER = function() {
         this.source.stop(0);
 
         // If paused, calculate time where we stopped. Otherwise go back to beginning of playback (0).
-        this.playbackTime = pause ? (Date.now() - this.startTimestamp)/1000 + this.playbackTime : 0;
+        this.playbackTime = pause ? (Date.now() - this.startTimestamp) / 1000 + this.playbackTime : 0;
     };
 
     // Callback for any time playback stops/pauses
@@ -68,7 +81,7 @@ PLAYER = function() {
           this.playbackTime = 0;
 
       this.isPlaying = false;
-    }
+    };
 
     this.load = function(url) {
 
@@ -79,24 +92,66 @@ PLAYER = function() {
         // When loaded decode the data
         request.onload = function() {
 
-            // decode the data
             $this.context.decodeAudioData(request.response, function(buffer) {
-                // when the audio is decoded play the sound
 
                 $this.buffer = buffer;
-            }, $this.onError);
+
+            },  $this.onError);
         }
         request.send();
     };
 
     this.setup = function() {
 
+        this.source = this.context.createBufferSource();
+        this.source.connect(this.context.destination);
+
+        // setup a javascript node
+        this.analyserNode = this.context.createScriptProcessor(2048, 1, 1);
+        // connect to destination, else it isn't called
+        this.analyserNode.connect(this.context.destination);
+
+        // setup a analyzer
+        this.analyser = this.context.createAnalyser();
+        this.analyser.smoothingTimeConstant = 0.3;
+        this.analyser.fftSize = 512;
+
         // create a buffer source node
         this.source = this.context.createBufferSource();
+        this.source.connect(this.analyser);
+        this.analyser.connect(this.analyserNode);
 
-        // and connect to destination
         this.source.connect(this.context.destination);
-    }
+
+        this.analyserNode.onaudioprocess = function() {
+            $this.drawAnalyse();
+        };
+    };
+
+    this.drawAnalyse = function() {
+
+        // get the average for the first channel
+        var array = new Uint8Array(this.analyser.frequencyBinCount);
+
+        this.analyser.getByteFrequencyData(array);
+
+        // clear the current state
+        this.canvas.clearRect(0, 0, 1000, 325);
+
+        this.canvas.fillStyle = this.canvasGradient;
+
+        this.drawSpectrum(array);
+    };
+
+    this.drawSpectrum = function(array) {
+
+        for ( var i = 0; i < (array.length); i++ )
+        {
+            var value = array[i];
+
+            this.canvas.fillRect((i * 5), (325 - value), 3, 325);
+        }
+    };
 
     this.onError = function(e) {
         console.error(e);
@@ -104,6 +159,8 @@ PLAYER = function() {
 
     this.init = function() {
         this.context = new AudioContext();
+
+        this.initCanvas();
 
         this.setup();
     };
