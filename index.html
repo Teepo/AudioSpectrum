@@ -1,15 +1,42 @@
 <html>
   <head>
+
+    <link rel="stylesheet" href="/assets/css/main.css" />
+
     <script src="lib/jquery.min.js"></script>
 
     <script src="js/analyser.js"></script>
     <script src="js/player.js"></script>
 
+    <script src="js/panel.js"></script>
+
     <script src="js/script.js"></script>
   </head>
   <body>
 
-    <canvas id="canvas" width="1000" height="325" style="display:block;"></canvas>
+    <div class="panel left">
+
+      <div class="controls">
+        <form>
+          <input type="file" name="file" />
+          <input type="submit" value="Open a file" />
+        </form>
+      </div>
+
+      <canvas id="canvas" width="1000" height="325" style="display:block;"></canvas>
+    </div>
+
+    <div class="panel right">
+
+      <div class="controls">
+        <form>
+          <input type="file" name="file" />
+          <input type="submit" value="Open a file" />
+        </form>
+      </div>
+
+      <canvas id="canvas" width="1000" height="325" style="display:block;"></canvas>
+    </div>
 
   </body>
 </html>

@@ -1,6 +1,6 @@
-var PLAYER = {};
+var Player = {};
 
-PLAYER = function() {
+Player = function() {
 
     var $this = this;
 
@@ -83,7 +83,21 @@ PLAYER = function() {
       this.isPlaying = false;
     };
 
-    this.load = function(url) {
+    this.onFileChange = function(then, event) {
+
+        var reader = new FileReader();
+        reader.readAsArrayBuffer(event.target.files[0]);
+
+        reader.onload = function (e) {
+            then(e.target.result);
+        };
+
+        reader.onerror = function (e) {
+            console.error('[onFileChange]', e);
+        };
+    };
+
+    this.loadByUrl = function(url) {
 
         var request = new XMLHttpRequest();
         request.open('GET', url, true);
@@ -91,14 +105,26 @@ PLAYER = function() {
 
         // When loaded decode the data
         request.onload = function() {
+            $this.load(request.response);
+        };
 
-            $this.context.decodeAudioData(request.response, function(buffer) {
-
-                $this.buffer = buffer;
-
-            },  $this.onError);
-        }
         request.send();
+    };
+
+    this.load = function(arrayBuffer) {
+
+        if ($this.source !== null)
+            $this.source.stop();
+
+        $this.init();
+
+        $this.context.decodeAudioData(arrayBuffer, function(buffer) {
+
+            $this.buffer = buffer;
+
+            $this.play();
+
+        },  $this.onError);
     };
 
     this.setup = function() {
@@ -107,7 +133,8 @@ PLAYER = function() {
         this.source.connect(this.context.destination);
 
         // setup a javascript node
-        this.analyserNode = this.context.createScriptProcessor(2048, 1, 1);
+        this.analyserNode = this.context.createScriptProcessor(1024, 1, 1);
+
         // connect to destination, else it isn't called
         this.analyserNode.connect(this.context.destination);
 
@@ -145,16 +172,12 @@ PLAYER = function() {
 
     this.drawSpectrum = function(array) {
 
-        for ( var i = 0; i < (array.length); i++ )
-        {
-            var value = array[i];
-
-            this.canvas.fillRect((i * 5), (325 - value), 3, 325);
-        }
+        for (var i = 0; i < (array.length); i++)
+            this.canvas.fillRect((i * 5), (325 - array[i]), 3, 325);
     };
 
     this.onError = function(e) {
-        console.error(e);
+        console.error('[player]', e);
     };
 
     this.init = function() {
