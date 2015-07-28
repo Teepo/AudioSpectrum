@@ -1,49 +1,7 @@
 body {
-    background-color: #cce6ff;
+    background-color: #333;
     margin: 0;
     padding: 0;
-}
-
-.panel {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 50%;
-}
-
-.panel.left { left: 0; }
-.panel.right { right: 0; }
-
-.controls {
-    background-color: #292929;
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-    bottom: 50%;
-}
-
-.controls::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    height: 2px;
-    background-color: #fff;
-    z-index: 1
-}
-
-.panel.left::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    background-color: #fff;
-    width: 2px;
-    z-index: 1;
 }
 
 canvas {
@@ -54,27 +12,22 @@ canvas {
     width: 100%;
 }
 
-.controls input[type="file"],
-.controls input[type="submit"] {
+input[type="file"], input[type="submit"] {
     position: absolute;
-    bottom: 0;
+    top: 0;
     left: 0;
     right: 0;
     width: 100%;
     padding: 16px 0;
 }
 
-.controls input[type="file"] {
+input[type="file"] {
     z-index: 1;
     opacity: 0;
     cursor: pointer;
 }
 
-.controls input[type="file"]:hover + input[type="submit"] {
-    background-color: #4591FF;
-}
-
-.controls input[type="submit"] {
+input[type="submit"] {
     background-color: #0068FF;
     color: #fff;
     font-size: 16px;
@@ -86,4 +39,8 @@ canvas {
     transition-duration: .2s;
     transition-delay: 0;
     transition-timing-function: linear;
+}
+
+input[type="file"]:hover + input[type="submit"] {
+    background-color: #4591FF;
 }

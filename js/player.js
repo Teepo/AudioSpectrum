@@ -30,7 +30,7 @@ Player = function() {
 
     this.initCanvas = function() {
 
-        this.canvas = document.getElementsByTagName('canvas')[0];
+        this.canvas = document.querySelector('canvas');
         this.canvas = this.canvas.getContext('2d');
 
         this.canvasGradient = this.canvas.createLinearGradient(0, 0, 0, 300);
@@ -76,17 +76,19 @@ Player = function() {
     // Callback for any time playback stops/pauses
     this.endOfPlayback = function(endEvent) {
 
-      // If playback stopped because end of buffer was reached
-      if (this.isPlaying)
-          this.playbackTime = 0;
+        // If playback stopped because end of buffer was reached
+        if (this.isPlaying)
+            this.playbackTime = 0;
 
-      this.isPlaying = false;
+        this.isPlaying = false;
     };
 
     this.onFileChange = function(then, event) {
 
         var reader = new FileReader();
         reader.readAsArrayBuffer(event.target.files[0]);
+
+        $this.panel = event.target.closest('.panel');
 
         reader.onload = function (e) {
             then(e.target.result);
@@ -181,6 +183,7 @@ Player = function() {
     };
 
     this.init = function() {
+
         this.context = new AudioContext();
 
         this.initCanvas();
