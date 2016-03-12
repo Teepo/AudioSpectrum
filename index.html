@@ -1,25 +1,24 @@
 <html>
   <head>
 
-    <link rel="stylesheet" href="/assets/css/main.css" />
+    <link rel="stylesheet" href="assets/css/main.css" />
 
-    <script src="lib/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
 
-    <script src="js/analyser.js"></script>
     <script src="js/player.js"></script>
-
-    <script src="js/panel.js"></script>
 
     <script src="js/script.js"></script>
   </head>
   <body>
 
-    <form>
-      <input type="file" name="file" />
-      <input type="submit" value="Open a file" />
-    </form>
+    <div id="container">
+      <form>
+        <input type="file" name="file" />
+        <input type="submit" value="Open a file" />
+      </form>
 
-    <canvas width="1000" height="325" style="display:block;"></canvas>
+      <canvas width="1000" height="325"></canvas>
+    </div>
 
   </body>
 </html>

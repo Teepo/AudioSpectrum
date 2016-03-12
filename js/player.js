@@ -1,8 +1,4 @@
-var Player = {};
-
-Player = function() {
-
-    var $this = this;
+var  Player = (function() {
 
     this.canvas = null;
 
@@ -83,16 +79,16 @@ Player = function() {
         this.isPlaying = false;
     };
 
-    this.onFileChange = function(then, event) {
+    this.onFileChange = function(event) {
 
         var reader = new FileReader();
         reader.readAsArrayBuffer(event.target.files[0]);
 
-        $this.panel = event.target.closest('.panel');
-
         reader.onload = function (e) {
-            then(e.target.result);
-        };
+
+            this.load(e.target.result);
+
+        }.bind(this);
 
         reader.onerror = function (e) {
             console.error('[onFileChange]', e);
@@ -106,27 +102,29 @@ Player = function() {
         request.responseType = 'arraybuffer';
 
         // When loaded decode the data
-        request.onload = function() {
-            $this.load(request.response);
-        };
+        request.onload = function()
+        {
+            this.load(request.response).bind(this);
+
+        }.bind(this);
 
         request.send();
     };
 
     this.load = function(arrayBuffer) {
 
-        if ($this.source !== null)
-            $this.source.stop();
+        if (this.source !== null)
+            this.source.stop();
 
-        $this.init();
+        this.init();
 
-        $this.context.decodeAudioData(arrayBuffer, function(buffer) {
+        this.context.decodeAudioData(arrayBuffer, function(buffer) {
 
-            $this.buffer = buffer;
+            this.buffer = buffer;
 
-            $this.play();
+            this.play();
 
-        },  $this.onError);
+        }.bind(this), this.onError);
     };
 
     this.setup = function() {
@@ -153,8 +151,8 @@ Player = function() {
         this.source.connect(this.context.destination);
 
         this.analyserNode.onaudioprocess = function() {
-            $this.drawAnalyse();
-        };
+            this.drawAnalyse();
+        }.bind(this);
     };
 
     this.drawAnalyse = function() {
@@ -190,4 +188,7 @@ Player = function() {
 
         this.setup();
     };
-};
+
+    var input = document.querySelector('input[type="file"]');
+    input.addEventListener('change', this.onFileChange.bind(this));
+});
