@@ -176,6 +176,10 @@ var  Player = (function() {
             this.canvas.fillRect((i * 5), (325 - array[i]), 3, 325);
     };
 
+    this.listen = function(element) {
+        element.addEventListener('change', this.onFileChange.bind(this));
+    };
+
     this.onError = function(e) {
         console.error('[player]', e);
     };
@@ -189,6 +193,4 @@ var  Player = (function() {
         this.setup();
     };
 
-    var input = document.querySelector('input[type="file"]');
-    input.addEventListener('change', this.onFileChange.bind(this));
 });
