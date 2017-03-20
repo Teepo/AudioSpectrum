@@ -1,20 +1,22 @@
 {
-  "scripts": {
-    "start": "npm run js_maker & npm run server",
-    "server": "./node_modules/serve/bin/serve ./public/",
-    "js_maker": "webpack --progress --colors --watch --debug"
-  },
-  "dependencies": {
-    "babel": "^6.5.2",
-    "babel-cli": "^6.16.0",
-    "babel-core": "^6.17.0",
-    "babel-loader": "^6.2.5",
-    "babel-preset-es2015": "^6.16.0",
-    "serve": "1.4.0",
-    "webpack": "^1.13.2"
-  },
-  "devDependencies": {
-    "eslint": "^3.18.0",
-    "jsdoc": "^3.4.3"
-  }
+    "scripts": {
+        "start": "npm run js_maker & npm run server",
+        "server": "./node_modules/serve/bin/serve ./public/",
+        "js_maker": "webpack --progress --colors --watch --debug",
+        "jsdoc": "./node_modules/jsdoc/jsdoc.js -c ./.jsdoc.json"
+    },
+    "dependencies": {
+        "babel": "^6.5.2",
+        "babel-cli": "^6.16.0",
+        "babel-core": "^6.17.0",
+        "babel-loader": "^6.2.5",
+        "babel-preset-es2015": "^6.16.0",
+        "serve": "1.4.0",
+        "webpack": "^1.13.2"
+    },
+    "devDependencies": {
+        "docdash": "^0.4.0",
+        "eslint": "^3.18.0",
+        "jsdoc": "^3.4.3"
+    }
 }
