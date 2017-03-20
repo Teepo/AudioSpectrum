@@ -70,10 +70,6 @@ var AudioSpectrum =
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	/**
-	 *
-	 * @class Player
-	 */
 	var Player = exports.Player = function () {
 
 	    /**
@@ -103,12 +99,24 @@ var AudioSpectrum =
 	        this.bufferDuration = 0;
 	    }
 
+	    /**
+	     * @method
+	     *
+	     */
+
+
 	    _createClass(Player, [{
 	        key: 'initSource',
 	        value: function initSource() {
 	            this.source.buffer = this.buffer;
 	            this.source.onended = this.endOfPlayback;
 	        }
+
+	        /**
+	         * @method
+	         *
+	         */
+
 	    }, {
 	        key: 'initCanvas',
 	        value: function initCanvas() {
@@ -122,6 +130,12 @@ var AudioSpectrum =
 	            this.canvasGradient.addColorStop(0.25, '#ffff00');
 	            this.canvasGradient.addColorStop(0, '#ffffff');
 	        }
+
+	        /**
+	         * @method
+	         *
+	         */
+
 	    }, {
 	        key: 'play',
 	        value: function play() {
@@ -251,6 +265,12 @@ var AudioSpectrum =
 	                _this3.play();
 	            }, this.onError);
 	        }
+
+	        /**
+	         * @method
+	         *
+	         */
+
 	    }, {
 	        key: 'setup',
 	        value: function setup() {
@@ -280,6 +300,12 @@ var AudioSpectrum =
 	                this.drawAnalyse();
 	            }.bind(this);
 	        }
+
+	        /**
+	         * @method
+	         *
+	         */
+
 	    }, {
 	        key: 'drawAnalyse',
 	        value: function drawAnalyse() {
@@ -314,6 +340,12 @@ var AudioSpectrum =
 	        /**
 	         * @param {NodeElement} node
 	         *
+	         * @example
+	         * var player = new Player;
+	         *
+	         * player.listen(document.querySelector('input[type="file"]') );
+	         *
+	         * @listens Player#change
 	         */
 
 	    }, {
@@ -326,6 +358,7 @@ var AudioSpectrum =
 	        /**
 	         * @param {Object} event
 	         *
+	         * @fires Player#error
 	         */
 
 	    }, {
@@ -334,6 +367,12 @@ var AudioSpectrum =
 
 	            console.error('[player] error >', event);
 	        }
+
+	        /**
+	         * @method
+	         *
+	         */
+
 	    }, {
 	        key: 'init',
 	        value: function init() {
