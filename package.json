@@ -14,6 +14,7 @@
     "webpack": "^1.13.2"
   },
   "devDependencies": {
+    "eslint": "^3.18.0",
     "jsdoc": "^3.4.3"
   }
 }
