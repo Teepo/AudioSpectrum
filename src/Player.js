@@ -1,30 +1,41 @@
-var  Player = (function() {
+/**
+ *
+ * @class Player
+ */
+export class Player {
 
-    this.canvas = null;
+    /**
+     *
+     * @constructor
+     */
+    constructor() {
 
-    this.context = null;
-    this.buffer = null;
-    this.source = null;
+        this.canvas = null;
 
-    this.analyser = null;
-    this.analyserNode = null;
+        this.context = null;
+        this.buffer  = null;
+        this.source  = null;
 
-    this.playbackTime = 0; // time of the audio playback, seconds
-    this.startTimestamp = 0; // timestamp of last playback start, milliseconds
-    this.isPlaying = false;
-    this.bufferDuration = 0; // seconds
+        this.analyser     = null;
+        this.analyserNode = null;
 
-    // Create a new AudioBufferSourceNode
-    this.initSource = function() {
+        // time of the audio playback, seconds
+        this.playbackTime = 0;
 
-        this.source.buffer = this.buffer;
+        // timestamp of last playback start, milliseconds
+        this.startTimestamp = 0;
+        this.isPlaying      = false;
 
-        // Bind the callback to this
-        var endOfPlayback = this.endOfPlayback.bind(this);
-        this.source.onended = endOfPlayback;
-    };
+        // in seconds
+        this.bufferDuration = 0;
+    }
 
-    this.initCanvas = function() {
+    initSource() {
+        this.source.buffer  = this.buffer;
+        this.source.onended = this.endOfPlayback;
+    }
+
+    initCanvas() {
 
         this.canvas = document.querySelector('canvas');
         this.canvas = this.canvas.getContext('2d');
@@ -34,9 +45,9 @@ var  Player = (function() {
         this.canvasGradient.addColorStop(0.75, '#ff0000');
         this.canvasGradient.addColorStop(0.25, '#ffff00');
         this.canvasGradient.addColorStop(0, '#ffffff');
-    };
+    }
 
-    this.play = function() {
+    play() {
 
         if (this.isPlaying)
             return false;
@@ -48,15 +59,23 @@ var  Player = (function() {
         this.startTimestamp = Date.now();
 
         this.isPlaying = true;
-    };
+    }
 
-    // Pause playback, keep track of where playback stopped
-    this.pause = function() {
+    /**
+     * @description Pause playback, keep track of where playback stopped
+     *
+     */
+    pause() {
         this.stop(true);
-    };
+    }
 
-    // stop or pause
-    this.stop = function(pause) {
+    /**
+     * @param {Boolean} pause
+     *
+     * @description Stop or pause
+     *
+     */
+    stop(pause) {
 
         if (!this.isPlaying)
             return false;
@@ -67,67 +86,80 @@ var  Player = (function() {
 
         // If paused, calculate time where we stopped. Otherwise go back to beginning of playback (0).
         this.playbackTime = pause ? (Date.now() - this.startTimestamp) / 1000 + this.playbackTime : 0;
-    };
+    }
 
-    // Callback for any time playback stops/pauses
-    this.endOfPlayback = function(endEvent) {
+    /**
+     * @description Callback for any time playback stops/pauses
+     *
+     */
+    endOfPlayback() {
 
         // If playback stopped because end of buffer was reached
         if (this.isPlaying)
             this.playbackTime = 0;
 
         this.isPlaying = false;
-    };
+    }
 
-    this.onFileChange = function(event) {
+    /**
+     * @param {Object} event
+     *
+     * @fires Player#change
+     */
+    onFileChange(event) {
 
         var reader = new FileReader();
         reader.readAsArrayBuffer(event.target.files[0]);
 
-        reader.onload = function (e) {
+        reader.onload = e => {
 
             this.load(e.target.result);
-
-        }.bind(this);
-
-        reader.onerror = function (e) {
-            console.error('[onFileChange]', e);
         };
-    };
 
-    this.loadByUrl = function(url) {
+        reader.onerror = e => {
+            console.error('[onFileChange] error > ', e);
+        };
+    }
+
+    /**
+     * @param {String} url
+     *
+     */
+    loadByUrl(url) {
 
         var request = new XMLHttpRequest();
         request.open('GET', url, true);
         request.responseType = 'arraybuffer';
 
         // When loaded decode the data
-        request.onload = function()
-        {
-            this.load(request.response).bind(this);
-
-        }.bind(this);
+        request.onload = () => {
+            this.load(request.response);
+        };
 
         request.send();
-    };
+    }
 
-    this.load = function(arrayBuffer) {
+    /**
+     * @param {Object} arrayBuffer
+     *
+     */
+    load(arrayBuffer) {
 
         if (this.source !== null)
-            this.source.stop();
+            this.stop();
 
         this.init();
 
-        this.context.decodeAudioData(arrayBuffer, function(buffer) {
+        this.context.decodeAudioData(arrayBuffer, buffer => {
 
             this.buffer = buffer;
 
             this.play();
 
-        }.bind(this), this.onError);
-    };
+        }, this.onError);
+    }
 
-    this.setup = function() {
+    setup() {
 
         this.source = this.context.createBufferSource();
         this.source.connect(this.context.destination);
@@ -153,9 +185,9 @@ var  Player = (function() {
         this.analyserNode.onaudioprocess = function() {
             this.drawAnalyse();
         }.bind(this);
-    };
+    }
 
-    this.drawAnalyse = function() {
+    drawAnalyse() {
 
         // get the average for the first channel
         var array = new Uint8Array(this.analyser.frequencyBinCount);
@@ -168,29 +200,43 @@ var  Player = (function() {
         this.canvas.fillStyle = this.canvasGradient;
 
         this.drawSpectrum(array);
-    };
+    }
 
-    this.drawSpectrum = function(array) {
+    /**
+     * @param {Array} array
+     *
+     */
+    drawSpectrum(array) {
 
         for (var i = 0; i < (array.length); i++)
             this.canvas.fillRect((i * 5), (325 - array[i]), 3, 325);
-    };
+    }
 
-    this.listen = function(element) {
-        element.addEventListener('change', this.onFileChange.bind(this));
-    };
+    /**
+     * @param {NodeElement} node
+     *
+     */
+    listen(node) {
 
-    this.onError = function(e) {
-        console.error('[player]', e);
-    };
+        node.addEventListener('change', this.onFileChange.bind(this));
+    }
 
-    this.init = function() {
+    /**
+     * @param {Object} event
+     *
+     */
+    onError(event) {
+
+        console.error('[player] error >', event);
+    }
+
+    init() {
 
         this.context = new AudioContext();
 
         this.initCanvas();
 
         this.setup();
-    };
+    }
 
-});
+}

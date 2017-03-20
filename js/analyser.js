@@ -1,4 +1,0 @@
-var ANALYSER = {};
-
-ANALYSER = function() {
-};
